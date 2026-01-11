@@ -10,19 +10,20 @@ authRouter.post("/register", async (req, res) => {
   const schema = z.object({
     name: z.string().min(2),
     email: z.string().email(),
-    password: z.string().min(6)
+    password: z.string().min(6),
+    role: z.enum(["STUDENT", "PROFESSOR"]).optional().default("STUDENT")
   });
 
   const parsed = schema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ message: "malformed request", details: parsed.error.errors });
 
-  const { name, email, password } = parsed.data;
+  const { name, email, password, role } = parsed.data;
 
   const exists = await User.findOne({ where: { email } });
   if (exists) return res.status(409).json({ message: "email already used" });
 
   const passwordHash = await bcrypt.hash(password, 10);
-  const user = await User.create({ name, email, passwordHash, role: "STUDENT" });
+  const user = await User.create({ name, email, passwordHash, role });
 
   return res.status(201).json({ id: user.id, name: user.name, email: user.email, role: user.role });
 });

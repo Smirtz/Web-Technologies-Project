@@ -45,6 +45,12 @@ export const Grade = sequelize.define("Grade", {
 User.belongsToMany(Project, { through: ProjectMember });
 Project.belongsToMany(User, { through: ProjectMember });
 
+// Direct associations for includes
+ProjectMember.belongsTo(User);
+ProjectMember.belongsTo(Project);
+User.hasMany(ProjectMember);
+Project.hasMany(ProjectMember);
+
 Project.hasMany(Deliverable, { onDelete: "CASCADE" });
 Deliverable.belongsTo(Project);
 
@@ -53,6 +59,12 @@ DeliverableResource.belongsTo(Deliverable);
 
 Deliverable.belongsToMany(User, { through: JuryAssignment, as: "Jurors" });
 User.belongsToMany(Deliverable, { through: JuryAssignment, as: "JuryTasks" });
+
+// Direct associations for JuryAssignment includes
+JuryAssignment.belongsTo(User);
+JuryAssignment.belongsTo(Deliverable);
+User.hasMany(JuryAssignment);
+Deliverable.hasMany(JuryAssignment);
 
 Deliverable.hasMany(Grade, { onDelete: "CASCADE" });
 Grade.belongsTo(Deliverable);
